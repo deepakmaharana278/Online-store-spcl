@@ -10,6 +10,9 @@ class Command(BaseCommand):
             {'name': 'Fashion', 'slug': 'fashion', 'icon': '👕'},
             {'name': 'Home Appliances', 'slug': 'home-appliances', 'icon': '🏠'},
             {'name': 'Books', 'slug': 'books', 'icon': '📔'},
+            {'name': 'Sports', 'slug': 'sports', 'icon': '⚽'},  
+            {'name': 'Beauty', 'slug': 'beauty', 'icon': '💄'},  
+            {'name': 'Toys', 'slug': 'toys', 'icon': '🎮'},      
         ]
         
         for cat in categories:
