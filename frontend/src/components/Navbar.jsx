@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchCategories } from "../services/api";
 
 const Navbar = () => {
-    const [categories, setCategories] = useState([]);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate()
 
   useEffect(() => {
     loadCategories();
@@ -13,6 +15,14 @@ const Navbar = () => {
   const loadCategories = async () => {
     const data = await fetchCategories();
     setCategories(data);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery("");
+    }
   };
 
   return (
@@ -25,7 +35,22 @@ const Navbar = () => {
           <span className="text-white">Deepak</span>
           <span className="text-amber-400">Shop</span>
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 mb-0.5 ml-0.5" />
-        </Link>
+            </Link>
+            
+            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full border rounded-lg px-4 py-2 pr-10 text-white  focus:border-blue-500"
+              />
+              <button type="submit" className="absolute right-2 top-2 text-gray-400">
+                <i className="fas fa-search"></i>
+              </button>
+            </div>
+          </form>
 
         <div className="hidden md:flex items-center h-full">
           <Link
