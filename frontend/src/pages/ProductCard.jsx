@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 
 const ProductCard = ({ product, onAddToCart }) => {
+  const [isAdding, setIsAdding] = useState(false);
+
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
     return "★".repeat(fullStars) + "☆".repeat(5 - fullStars);
+  };
+
+  const handleAddToCart = () => {
+    if (isAdding) return; 
+    setIsAdding(true);
+    onAddToCart(product);
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 1000);
   };
 
   return (
@@ -24,12 +35,17 @@ const ProductCard = ({ product, onAddToCart }) => {
         <p className="text-gray-500 text-xs mb-3 line-clamp-2 leading-relaxed">{product.description}</p>
         <div className="text-amber-400 text-sm mb-4">{renderStars(product.rating)}</div>
         <div className="flex justify-between items-center">
-          <span className="text-xl font-bold text-amber-400">₹{product.price.toLocaleString("en-IN")}</span>
+          <span className="text-xl font-bold text-amber-400">₹{parseFloat(product.price).toLocaleString("en-IN")}</span>
           <button
-            onClick={() => onAddToCart(product)}
-            className="bg-amber-400 text-gray-950 text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-lg hover:bg-amber-300 active:scale-95 transition-all duration-150"
+            onClick={handleAddToCart}
+            disabled={isAdding}
+            className={`bg-amber-400 text-gray-950 text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-lg transition-all duration-150 ${
+              isAdding 
+                ? 'opacity-50 cursor-not-allowed' 
+                : 'hover:bg-amber-300 active:scale-95'
+            }`}
           >
-            Add to Cart
+            {isAdding ? 'Adding...' : 'Add to Cart'}
           </button>
         </div>
       </div>
