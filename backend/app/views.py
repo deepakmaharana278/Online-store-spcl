@@ -47,3 +47,15 @@ def product_list(request):
     return Response(serializer.data)
 
     
+@api_view(['GET'])
+def featured_products(request):
+    limit = request.query_params.get('limit', 8)
+    try:
+        limit = int(limit)
+    except ValueError:
+        limit = 8
+    
+    # Get top rated products
+    products = Product.objects.all().order_by('-rating')[:limit]
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
