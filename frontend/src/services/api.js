@@ -19,3 +19,8 @@ export const fetchProducts = async (filters = {}) => {
   const response = await axios.get(`${API_BASE_URL}/products/?${params}`);
   return response.data;
 }
+
+export const fetchFeaturedProducts = async (limit = 8) => {
+  const response = await axios.get(`${API_BASE_URL}/products/featured/?limit=${limit}`);
+  return response.data;
+};
