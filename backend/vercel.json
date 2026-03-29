@@ -14,15 +14,15 @@
     },
     {
       "src": "/admin/(.*)",
-      "dest": "/backend/wsgi.py"
+      "dest": "api/wsgi.py"
     },
     {
       "src": "/api/(.*)",
-      "dest": "/backend/wsgi.py"
+      "dest": "api/wsgi.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/api/wsgi.py"
+      "dest": "api/wsgi.py"
     }
   ]
 }
