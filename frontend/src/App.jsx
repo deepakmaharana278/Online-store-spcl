@@ -5,6 +5,8 @@ import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
 import { useEffect, useState } from "react";
 import Products from "./pages/Products";
+import CheckOut from "./pages/CheckOut";
+import OrderSuccess from "./pages/OrderSuccess";
 
 const App = () => {
   const [cart, setCart] = useState([]);
@@ -25,24 +27,31 @@ const App = () => {
     setIsInitialized(true);
   }, []);
 
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
+    window.dispatchEvent(new Event("cartUpdated"));
+    toast.success("Cart cleared successfully!");
+  };
+
   useEffect(() => {
     if (isInitialized) {
       // console.log("App: Cart updated, saving to localStorage:", cart);
       localStorage.setItem("cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event('cartUpdated'));
+      window.dispatchEvent(new Event("cartUpdated"));
     }
   }, [cart, isInitialized]);
 
-  const addToCart = (product) => {    
-    setCart(prevCart => {
-      const existingIndex = prevCart.findIndex(item => item.id === product.id);
-      
+  const addToCart = (product) => {
+    setCart((prevCart) => {
+      const existingIndex = prevCart.findIndex((item) => item.id === product.id);
+
       let newCart;
       if (existingIndex !== -1) {
         newCart = [...prevCart];
         newCart[existingIndex] = {
           ...newCart[existingIndex],
-          quantity: (newCart[existingIndex].quantity || 1) + 1
+          quantity: (newCart[existingIndex].quantity || 1) + 1,
         };
       } else {
         newCart = [...prevCart, { ...product, quantity: 1 }];
@@ -53,20 +62,18 @@ const App = () => {
 
   const updateQuantity = (productId, newQuantity) => {
     console.log("App: Updating quantity for product:", productId, "to:", newQuantity);
-    setCart(prev => {
+    setCart((prev) => {
       if (newQuantity <= 0) {
-        return prev.filter(item => item.id !== productId);
+        return prev.filter((item) => item.id !== productId);
       } else {
-        return prev.map(item =>
-          item.id === productId ? { ...item, quantity: newQuantity } : item
-        );
+        return prev.map((item) => (item.id === productId ? { ...item, quantity: newQuantity } : item));
       }
     });
   };
 
   const removeFromCart = (productId) => {
     // console.log("App: Removing product from cart:", productId);
-    setCart(prev => prev.filter(item => item.id !== productId));
+    setCart((prev) => prev.filter((item) => item.id !== productId));
   };
 
   const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
@@ -75,24 +82,13 @@ const App = () => {
     <>
       <BrowserRouter>
         <Routes>
-          <Route 
-            path="/" 
-            element={<Home onAddToCart={addToCart}/>} 
-          />
+          <Route path="/" element={<Home onAddToCart={addToCart} />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route 
-            path="/cart" 
-            element={
-              <Cart 
-                cart={cart} 
-                updateQuantity={updateQuantity} 
-                removeFromCart={removeFromCart}
-                cartCount={cartCount}
-              />
-            } 
-          />
+          <Route path="/cart" element={<Cart cart={cart} updateQuantity={updateQuantity} removeFromCart={removeFromCart} cartCount={cartCount} />} />
           <Route path="/products" element={<Products onAddToCart={addToCart} />} />
+          <Route path="/checkout" element={<CheckOut cart={cart} cartCount={cartCount} clearCart={() => setCart([])} />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
         </Routes>
       </BrowserRouter>
     </>

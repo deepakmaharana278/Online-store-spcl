@@ -70,6 +70,12 @@ const Navbar = () => {
     }
   };
 
+   const handleCategoryClick = (categorySlug) => {
+    navigate(`/products?category=${categorySlug}`);
+    setIsMenuOpen(false);
+  };
+
+
   return (
     <>
       <nav className="bg-gray-950 border-b border-gray-800/60 shadow-lg shadow-black/30 sticky top-0 z-50">
@@ -106,20 +112,20 @@ const Navbar = () => {
               </Link>
 
               <div className="relative group h-full flex items-center">
-                <button className="h-full flex items-center gap-1.5 px-4 text-xs font-semibold tracking-widest uppercase text-gray-400 group-hover:text-white border-b-2 border-transparent group-hover:border-amber-400 transition-all duration-200">
+               <button className="h-full flex items-center gap-1.5 px-4 text-xs font-semibold tracking-widest uppercase text-gray-400 group-hover:text-white border-b-2 border-transparent group-hover:border-amber-400 transition-all duration-200">
                   Categories
-                  <i className="fa-solid fa-angle-down"></i>
+                  <i className="fas fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180"></i>
                 </button>
                 <div className="absolute top-full left-0 hidden group-hover:block bg-gray-950 border border-gray-800 border-t-2 border-t-amber-400 min-w-52 shadow-xl shadow-black/40 py-1.5 z-50">
                   {categories.map((cat) => (
-                    <Link
+                    <button
                       key={cat.id}
-                      to={`/?category=${cat.slug}`}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-400 hover:text-amber-400 hover:bg-amber-400/10 transition-colors duration-150"
+                      onClick={() => handleCategoryClick(cat.slug)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-400 hover:text-amber-400 hover:bg-amber-400/10 transition-colors duration-150 w-full text-left"
                     >
                       <span className="text-base w-5 text-center">{cat.icon}</span>
                       {cat.name}
-                    </Link>
+                    </button>
                   ))}
                 </div>
               </div>

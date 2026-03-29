@@ -1,11 +1,12 @@
 import React from "react";
 import Layout from "../components/Layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Cart = ({ cart, updateQuantity, removeFromCart, cartCount }) => {
   // console.log("Cart component rendering with cart:", cart);
-  
+  const navigate = useNavigate()
   const cartTotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * (item.quantity || 1)), 0);
+
 
   if (!cart || cart.length === 0) {
     return (
@@ -27,16 +28,13 @@ const Cart = ({ cart, updateQuantity, removeFromCart, cartCount }) => {
   return (
     <Layout cartCount={cartCount}>
       <div className="container mx-auto px-4 py-6 md:py-8">
-        {/* Header */}
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Shopping Cart</h1>
           <p className="text-gray-500 text-sm md:text-base">{cart.length} item(s) in your cart</p>
         </div>
         
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Cart Items Section */}
           <div className="lg:w-2/3">
-            {/* Desktop Table Header */}
             <div className="hidden md:block bg-gray-50 rounded-t-lg p-4 mb-2 border border-gray-200">
               <div className="grid grid-cols-12 gap-4 text-gray-600 text-sm font-semibold">
                 <div className="col-span-6">Product</div>
@@ -51,7 +49,7 @@ const Cart = ({ cart, updateQuantity, removeFromCart, cartCount }) => {
                 key={item.id} 
                 className="bg-white rounded-lg shadow-md mb-4 p-4 border border-gray-200 hover:shadow-lg transition-shadow duration-200"
               >
-                {/* Mobile Layout (visible on small screens) */}
+              
                 <div className="flex flex-col md:hidden gap-4">
                   <div className="flex gap-4">
                     <img 
@@ -151,9 +149,7 @@ const Cart = ({ cart, updateQuantity, removeFromCart, cartCount }) => {
                 to="/" 
                 className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 transition-colors text-sm md:text-base"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
+                <i className="fa-regular fa-circle-left"></i>
                 Continue Shopping
               </Link>
             </div>
@@ -184,7 +180,7 @@ const Cart = ({ cart, updateQuantity, removeFromCart, cartCount }) => {
                 </div>
               </div>
               
-              <button className="w-full bg-amber-400 text-gray-950 py-2.5 md:py-3 rounded-lg hover:bg-amber-300 transition-colors font-semibold text-sm md:text-base mb-3">
+              <button onClick={()=> navigate('/checkout')} className="w-full bg-amber-400 text-gray-950 py-2.5 md:py-3 rounded-lg hover:bg-amber-300 transition-colors font-semibold text-sm md:text-base mb-3">
                 Proceed to Checkout
               </button>
               

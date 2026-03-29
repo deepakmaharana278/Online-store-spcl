@@ -59,10 +59,7 @@ const Home = ({ onAddToCart }) => {
             <p className="text-gray-500">Hand-picked just for you</p>
           </div>
           <Link to="/products" className="mt-4 sm:mt-0 text-amber-600 hover:text-amber-700 font-semibold flex items-center gap-2">
-            View All Products
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            View All Products 
           </Link>
         </div>
 
