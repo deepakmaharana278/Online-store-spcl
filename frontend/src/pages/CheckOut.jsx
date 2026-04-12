@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { db } from "../firebase/config";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const CheckOut = ({ cart, cartCount, clearCart }) => {
   const navigate = useNavigate();
@@ -56,22 +58,68 @@ const CheckOut = ({ cart, cartCount, clearCart }) => {
   const handlePlaceOrder = async () => {
     setLoading(true);
 
-    setTimeout(() => {
-      const orderDetails = {
+    try {
+      // Prepare order data for Firestore
+      const orderData = {
         orderId: "ORD" + Date.now(),
+        customer: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: formData.country,
+        },
+        items: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: parseFloat(item.price),
+          quantity: item.quantity || 1,
+          image_url: item.image_url,
+          category: item.category_name || "Uncategorized"
+        })),
+        paymentMethod: formData.paymentMethod,
+        subtotal: cartTotal,
+        shipping: shippingCost,
+        tax: tax,
+        total: grandTotal,
+        status: "pending",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      // Save to Firestore
+      const docRef = await addDoc(collection(db, "orders"), orderData);
+      
+      console.log("Order saved with ID:", docRef.id);
+      
+      // Clear cart
+      clearCart();
+      
+      // Store order details for success page
+      const orderDetails = {
+        id: docRef.id,
+        orderId: orderData.orderId,
         items: cart,
         total: grandTotal,
         customer: formData,
         date: new Date().toISOString(),
       };
-
+      
       localStorage.setItem("lastOrder", JSON.stringify(orderDetails));
-      clearCart();
-
+      
       toast.success("Order placed successfully!");
       setLoading(false);
-      navigate("/order-success", { state: { order: orderDetails } });
-    }, 2000);
+      navigate("/order-success", { state: { order: orderDetails, firestoreId: docRef.id } });
+      
+    } catch (error) {
+      console.error("Error saving order:", error);
+      toast.error("Failed to place order. Please try again.");
+      setLoading(false);
+    }
   };
 
   if (cart.length === 0) {

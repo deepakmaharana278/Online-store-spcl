@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 const OrderSuccess = () => {
   const location = useLocation();
   const order = location.state?.order;
+  const firestoreId = location.state?.firestoreId;
 
   if (!order) {
     return (
@@ -29,24 +30,25 @@ const OrderSuccess = () => {
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <i className="fas fa-check text-4xl text-green-600"></i>
           </div>
-
+          
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Order Placed Successfully!</h1>
           <p className="text-gray-500 mb-6">Thank you for your purchase</p>
-
+          
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <p className="text-gray-600">
-              Order ID: <span className="font-bold text-gray-800">{order.orderId}</span>
-            </p>
-            <p className="text-gray-600 mt-1">Order Date: {new Date(order.date).toLocaleDateString()}</p>
+            <p className="text-gray-600">Order ID: <span className="font-bold text-gray-800">{order.orderId}</span></p>
+            {firestoreId && (
+              <p className="text-gray-600 mt-1">
+                Reference ID: <span className="font-mono text-sm text-gray-600">{firestoreId}</span>
+              </p>
+            )}
+            <p className="text-gray-600 mt-1">Order Date: {new Date(order.date).toLocaleString()}</p>
           </div>
-
+          
           <div className="border-t border-gray-200 pt-6 mb-6">
             <h3 className="font-bold text-gray-800 mb-3">Order Summary</h3>
-            {order.items.map((item) => (
+            {order.items.map(item => (
               <div key={item.id} className="flex justify-between text-sm mb-2">
-                <span>
-                  {item.name} x {item.quantity}
-                </span>
+                <span>{item.name} x {item.quantity}</span>
                 <span className="font-medium">₹{(parseFloat(item.price) * item.quantity).toLocaleString("en-IN")}</span>
               </div>
             ))}
@@ -57,7 +59,7 @@ const OrderSuccess = () => {
               </div>
             </div>
           </div>
-
+          
           <div className="space-y-3">
             <Link to="/products" className="block w-full bg-amber-400 text-gray-950 px-6 py-3 rounded-lg font-semibold hover:bg-amber-300 transition">
               Continue Shopping
