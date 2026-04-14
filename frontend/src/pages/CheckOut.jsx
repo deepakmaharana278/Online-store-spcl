@@ -59,7 +59,6 @@ const CheckOut = ({ cart, cartCount, clearCart }) => {
     setLoading(true);
 
     try {
-      // Prepare order data for Firestore
       const orderData = {
         orderId: "ORD" + Date.now(),
         customer: {
@@ -73,13 +72,12 @@ const CheckOut = ({ cart, cartCount, clearCart }) => {
           zipCode: formData.zipCode,
           country: formData.country,
         },
-        items: cart.map(item => ({
+        items: cart.map((item) => ({
           id: item.id,
           name: item.name,
           price: parseFloat(item.price),
           quantity: item.quantity || 1,
           image_url: item.image_url,
-          category: item.category_name || "Uncategorized"
         })),
         paymentMethod: formData.paymentMethod,
         subtotal: cartTotal,
@@ -88,18 +86,26 @@ const CheckOut = ({ cart, cartCount, clearCart }) => {
         total: grandTotal,
         status: "pending",
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
 
       // Save to Firestore
       const docRef = await addDoc(collection(db, "orders"), orderData);
-      
-      console.log("Order saved with ID:", docRef.id);
-      
-      // Clear cart
+
+      console.log("Order saved to Firestore with ID:", docRef.id);
+
+      // Also backup to localStorage for offline access
+      const backupOrder = {
+        ...orderData,
+        id: docRef.id,
+        date: new Date().toISOString(),
+      };
+      const existingBackup = JSON.parse(localStorage.getItem("backup_orders") || "[]");
+      existingBackup.unshift(backupOrder);
+      localStorage.setItem("backup_orders", JSON.stringify(existingBackup));
+
       clearCart();
-      
-      // Store order details for success page
+
       const orderDetails = {
         id: docRef.id,
         orderId: orderData.orderId,
@@ -108,16 +114,15 @@ const CheckOut = ({ cart, cartCount, clearCart }) => {
         customer: formData,
         date: new Date().toISOString(),
       };
-      
+
       localStorage.setItem("lastOrder", JSON.stringify(orderDetails));
-      
+
       toast.success("Order placed successfully!");
-      setLoading(false);
       navigate("/order-success", { state: { order: orderDetails, firestoreId: docRef.id } });
-      
     } catch (error) {
       console.error("Error saving order:", error);
       toast.error("Failed to place order. Please try again.");
+    } finally {
       setLoading(false);
     }
   };

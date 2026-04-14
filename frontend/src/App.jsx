@@ -7,10 +7,21 @@ import { useEffect, useState } from "react";
 import Products from "./pages/Products";
 import CheckOut from "./pages/CheckOut";
 import OrderSuccess from "./pages/OrderSuccess";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
+import OrderTracking from "./pages/OrderTracking";
 
 const App = () => {
   const [cart, setCart] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [adminAuthenticated, setAdminAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const auth = localStorage.getItem("adminAuth");
+    if (auth === "true") {
+      setAdminAuthenticated(true);
+    }
+  }, []);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
@@ -89,6 +100,11 @@ const App = () => {
           <Route path="/products" element={<Products onAddToCart={addToCart} />} />
           <Route path="/checkout" element={<CheckOut cart={cart} cartCount={cartCount} clearCart={() => setCart([])} />} />
           <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/track-order" element={<OrderTracking cartCount={cartCount} />} />
+          <Route
+            path="/admin"
+            element={adminAuthenticated ? <AdminDashboard cartCount={cartCount} setAdminAuthenticated={setAdminAuthenticated} /> : <AdminLogin setAdminAuthenticated={setAdminAuthenticated} />}
+          />
         </Routes>
       </BrowserRouter>
     </>
